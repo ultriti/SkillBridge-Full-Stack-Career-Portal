@@ -10,6 +10,8 @@ import studentRoutes from './routes/student.routes';
 import adminRoutes from './routes/admin.routes';
 import notificationRoutes from './routes/notification.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import resumeRoutes from './routes/resume.routes';
+import candidateRoutes from './routes/candidate.routes';
 
 dotenv.config();
 
@@ -40,5 +42,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/resumes', resumeRoutes);
+app.use('/api/candidates', candidateRoutes);
 
 export default app;

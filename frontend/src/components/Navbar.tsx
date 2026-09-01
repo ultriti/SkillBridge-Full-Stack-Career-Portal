@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { NotificationBell } from './notifications/NotificationBell';
-import { Briefcase, Bookmark, PlusCircle, ShieldCheck, LogOut, LogIn, UserPlus, FileText, Users, LayoutDashboard, Building } from 'lucide-react';
+import { Briefcase, Bookmark, PlusCircle, ShieldCheck, LogOut, LogIn, UserPlus, FileText, Users, LayoutDashboard, Building, FolderGit2 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -37,6 +37,10 @@ export const Navbar: React.FC = () => {
                   <LayoutDashboard className="w-4 h-4 text-indigo-400" />
                   <span>Dashboard</span>
                 </Link>
+                <Link to="/student/resumes" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
+                  <FolderGit2 className="w-4 h-4 text-indigo-400" />
+                  <span>Resumes</span>
+                </Link>
                 <Link to="/student/applications" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
                   <FileText className="w-4 h-4 text-indigo-400" />
                   <span>My Applications</span>
@@ -54,6 +58,10 @@ export const Navbar: React.FC = () => {
                   <LayoutDashboard className="w-4 h-4 text-emerald-400" />
                   <span>Dashboard</span>
                 </Link>
+                <Link to="/recruiter/candidates" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
+                  <Users className="w-4 h-4 text-emerald-400" />
+                  <span>Candidates</span>
+                </Link>
                 <Link to="/recruiter/company" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
                   <Building className="w-4 h-4 text-emerald-400" />
                   <span>Company Profile</span>
@@ -63,7 +71,7 @@ export const Navbar: React.FC = () => {
                   <span>My Jobs</span>
                 </Link>
                 <Link to="/recruiter/applications" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
-                  <Users className="w-4 h-4 text-emerald-400" />
+                  <FileText className="w-4 h-4 text-emerald-400" />
                   <span>Applicants</span>
                 </Link>
                 <Link to="/recruiter/jobs/create" className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg transition font-medium">
@@ -78,6 +86,10 @@ export const Navbar: React.FC = () => {
                 <Link to="/admin/dashboard" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
                   <LayoutDashboard className="w-4 h-4" />
                   <span>Dashboard</span>
+                </Link>
+                <Link to="/recruiter/candidates" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
+                  <Users className="w-4 h-4" />
+                  <span>Candidates</span>
                 </Link>
                 <Link to="/admin/jobs" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
                   <ShieldCheck className="w-4 h-4" />

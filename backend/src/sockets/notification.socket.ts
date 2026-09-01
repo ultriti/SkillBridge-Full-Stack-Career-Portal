@@ -17,8 +17,16 @@ export function initNotificationSocket(io: SocketIOServer): void {
 
       const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
       const decoded = verifyAccessToken(token);
-      (socket as any).userId = decoded.id;
+      
+      // JWT AccessTokenPayload uses `sub` for user ID
+      const userId = decoded.sub || (decoded as any).id;
+      (socket as any).userId = userId;
       (socket as any).userRole = decoded.role;
+      
+      if (!userId) {
+        return next(new Error('Authentication error: Invalid user token payload'));
+      }
+
       next();
     } catch (err) {
       next(new Error('Authentication error: Invalid or expired token'));

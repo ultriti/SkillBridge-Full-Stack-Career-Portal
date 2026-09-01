@@ -12,6 +12,9 @@ import { EditJob } from './pages/recruiter/EditJob';
 import { CompanySetup } from './pages/recruiter/CompanySetup';
 import { SavedJobs } from './pages/student/SavedJobs';
 import { SavedSearches } from './pages/student/SavedSearches';
+import { StudentResumes } from './pages/student/StudentResumes';
+import { CandidateDiscovery } from './pages/recruiter/CandidateDiscovery';
+import { ShortlistedCandidates } from './pages/recruiter/ShortlistedCandidates';
 import { AdminJobs } from './pages/admin/AdminJobs';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
@@ -82,6 +85,14 @@ export function App() {
 
                 {/* Student Routes */}
                 <Route
+                  path="/student/resumes"
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <StudentResumes />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/student/saved-jobs"
                   element={
                     <ProtectedRoute allowedRoles={['student']}>
@@ -115,6 +126,22 @@ export function App() {
                 />
 
                 {/* Recruiter Routes */}
+                <Route
+                  path="/recruiter/candidates"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter', 'admin']}>
+                      <CandidateDiscovery />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recruiter/shortlisted"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <ShortlistedCandidates />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/recruiter/company"
                   element={

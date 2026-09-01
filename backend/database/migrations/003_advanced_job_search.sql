@@ -1,7 +1,17 @@
 -- Migration: 003_advanced_job_search.sql
--- Advanced Job Search, Full-Text Search Indexes, Search History, Saved Searches, and Job Alert Tracking
+-- Advanced Job Search, Full-Text Search Indexes, Job Skills, Search History, Saved Searches, and Job Alert Tracking
 
--- 1. Generated tsvector column on jobs table for fast full-text searching
+-- 1. JOB_SKILLS Junction Table
+CREATE TABLE IF NOT EXISTS job_skills (
+    job_id UUID NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+    skill_id UUID NOT NULL REFERENCES skills(id) ON DELETE CASCADE,
+    PRIMARY KEY (job_id, skill_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_job_skills_job_id ON job_skills(job_id);
+CREATE INDEX IF NOT EXISTS idx_job_skills_skill_id ON job_skills(skill_id);
+
+-- 2. Generated tsvector column on jobs table for fast full-text searching
 ALTER TABLE jobs 
 ADD COLUMN IF NOT EXISTS search_vector tsvector 
 GENERATED ALWAYS AS (
@@ -19,7 +29,7 @@ CREATE INDEX IF NOT EXISTS idx_jobs_work_mode ON jobs(work_mode);
 CREATE INDEX IF NOT EXISTS idx_jobs_job_type ON jobs(job_type);
 CREATE INDEX IF NOT EXISTS idx_jobs_salary_range ON jobs(salary_min, salary_max);
 
--- 2. Search History Table
+-- 3. Search History Table
 CREATE TABLE IF NOT EXISTS search_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -30,7 +40,7 @@ CREATE TABLE IF NOT EXISTS search_history (
 
 CREATE INDEX IF NOT EXISTS idx_search_history_user_created ON search_history(user_id, created_at DESC);
 
--- 3. Saved Searches Table
+-- 4. Saved Searches Table
 CREATE TABLE IF NOT EXISTS saved_searches (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -46,7 +56,7 @@ CREATE TABLE IF NOT EXISTS saved_searches (
 CREATE INDEX IF NOT EXISTS idx_saved_searches_user ON saved_searches(user_id);
 CREATE INDEX IF NOT EXISTS idx_saved_searches_alerts ON saved_searches(alert_enabled) WHERE alert_enabled = TRUE;
 
--- 4. Job Alert Deliveries Table (Idempotency tracking)
+-- 5. Job Alert Deliveries Table (Idempotency tracking)
 CREATE TABLE IF NOT EXISTS job_alert_deliveries (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     saved_search_id UUID NOT NULL REFERENCES saved_searches(id) ON DELETE CASCADE,
