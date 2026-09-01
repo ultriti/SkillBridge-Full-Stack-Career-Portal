@@ -43,7 +43,7 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
 
       next();
     } catch (error: any) {
-      if (error.message.includes('expired')) {
+      if (error.message && error.message.includes('expired')) {
         res.status(401).json({
           success: false,
           message: 'Access token has expired. Please refresh your token.',
@@ -61,6 +61,37 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
       message: 'Internal server error',
     });
   }
+}
+
+/**
+ * Optional authentication middleware - attaches user if token is provided and valid,
+ * but proceeds anyway if token is missing or invalid.
+ */
+export async function optionalAuthenticate(req: Request, _res: Response, next: NextFunction): Promise<void> {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7);
+      try {
+        const payload = verifyAccessToken(token);
+        const user = await userRepository.findById(payload.sub);
+        if (user) {
+          req.user = {
+            id: user.id,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            email: user.email,
+            role: user.role,
+          };
+        }
+      } catch (err) {
+        // Ignore invalid token on optional auth
+      }
+    }
+  } catch (err) {
+    // Ignore error
+  }
+  next();
 }
 
 /**

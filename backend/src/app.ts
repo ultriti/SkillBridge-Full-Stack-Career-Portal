@@ -4,6 +4,10 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import healthRoutes from './routes/healthRoutes';
 import authRoutes from './routes/auth.routes';
+import jobRoutes from './routes/job.routes';
+import recruiterRoutes from './routes/recruiter.routes';
+import studentRoutes from './routes/student.routes';
+import adminRoutes from './routes/admin.routes';
 
 dotenv.config();
 
@@ -28,5 +32,9 @@ app.use(cookieParser());
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/recruiter', recruiterRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/admin', adminRoutes);
 
 export default app;
