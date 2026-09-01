@@ -1,0 +1,1422 @@
+You are a senior full-stack software architect and developer.
+
+I am building my Major Web Development Project called:
+
+"SkillBridge: Full-Stack Career Portal"
+
+I have ALREADY created the following root structure:
+
+SkillBridge/
+├── frontend/
+└── backend/
+
+Do NOT recreate these folders.
+
+Your job is to help me build the entire project from scratch in a production-quality, maintainable, scalable way.
+
+==================================================
+1. PROJECT OBJECTIVE
+==================================================
+
+SkillBridge is a full-stack career portal designed primarily for students/freshers and recruiters.
+
+Students should be able to:
+
+- Register and login
+- Manage their professional profile
+- Upload and manage resumes
+- Browse jobs and internships
+- Search jobs
+- Filter jobs
+- Sort jobs
+- Paginate jobs
+- View detailed job information
+- Save/bookmark jobs
+- Apply for jobs
+- Track applications
+- View application status
+- Receive notifications
+- View dashboard analytics
+
+Recruiters should be able to:
+
+- Register and login
+- Create/manage their company profile
+- Create job and internship listings
+- Edit job listings
+- Delete/close job listings
+- View applicants
+- Review applications
+- Change application status
+- View recruiter dashboard
+- View job/application analytics
+
+Admins should be able to:
+
+- Login through secure authentication
+- View platform statistics
+- Manage users
+- Manage students
+- Manage recruiters
+- Manage companies
+- Manage jobs
+- Manage applications
+- Moderate platform content
+- View analytics
+
+The application must be responsive and support both light mode and dark mode.
+
+==================================================
+2. REQUIRED TECHNOLOGY STACK
+==================================================
+
+FRONTEND:
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+- TanStack Query
+- React Hook Form
+- Zod
+- Recharts
+- Lucide React
+
+BACKEND:
+
+- Node.js
+- Express.js
+- TypeScript
+- PostgreSQL
+- JWT
+- bcrypt
+- Zod
+- Multer
+
+DEVOPS:
+
+- Git
+- GitHub
+- Docker
+- Docker Compose
+- GitHub Actions
+
+DEPLOYMENT:
+
+- Frontend: Vercel
+- Backend: Render or Railway
+- Database: PostgreSQL hosted database
+
+==================================================
+3. IMPORTANT ARCHITECTURE RULE
+==================================================
+
+Use a clean separation of responsibilities.
+
+Frontend:
+
+React Component
+    ↓
+Page
+    ↓
+Hook / React Query
+    ↓
+API Service
+    ↓
+Axios
+    ↓
+Backend API
+
+Backend:
+
+Route
+    ↓
+Middleware
+    ↓
+Controller
+    ↓
+Service
+    ↓
+Repository / Database Layer
+    ↓
+PostgreSQL
+
+Do NOT put database queries directly inside controllers.
+
+Do NOT put business logic directly inside routes.
+
+Do NOT put API calls directly throughout random React components.
+
+Keep the project modular.
+
+==================================================
+4. FRONTEND STRUCTURE
+==================================================
+
+Inside frontend/src create a professional structure similar to:
+
+src/
+├── assets/
+├── components/
+│   ├── common/
+│   ├── ui/
+│   ├── layout/
+│   ├── jobs/
+│   ├── applications/
+│   ├── profile/
+│   └── dashboard/
+│
+├── pages/
+│   ├── public/
+│   ├── auth/
+│   ├── student/
+│   ├── recruiter/
+│   └── admin/
+│
+├── layouts/
+│   ├── PublicLayout.tsx
+│   ├── StudentLayout.tsx
+│   ├── RecruiterLayout.tsx
+│   └── AdminLayout.tsx
+│
+├── routes/
+│   ├── AppRoutes.tsx
+│   ├── ProtectedRoute.tsx
+│   └── RoleRoute.tsx
+│
+├── services/
+│   ├── api.ts
+│   ├── auth.api.ts
+│   ├── users.api.ts
+│   ├── jobs.api.ts
+│   ├── applications.api.ts
+│   ├── companies.api.ts
+│   ├── resumes.api.ts
+│   ├── notifications.api.ts
+│   └── admin.api.ts
+│
+├── hooks/
+├── types/
+├── utils/
+├── constants/
+├── lib/
+├── context/
+└── App.tsx
+
+Use TypeScript types/interfaces throughout the frontend.
+
+Avoid "any" unless absolutely necessary.
+
+==================================================
+5. BACKEND STRUCTURE
+==================================================
+
+Inside backend/src create:
+
+src/
+├── config/
+│   ├── database.ts
+│   └── env.ts
+│
+├── controllers/
+│   ├── auth.controller.ts
+│   ├── user.controller.ts
+│   ├── job.controller.ts
+│   ├── application.controller.ts
+│   ├── company.controller.ts
+│   ├── resume.controller.ts
+│   ├── notification.controller.ts
+│   └── admin.controller.ts
+│
+├── middleware/
+│   ├── auth.middleware.ts
+│   ├── role.middleware.ts
+│   ├── error.middleware.ts
+│   ├── upload.middleware.ts
+│   └── validation.middleware.ts
+│
+├── routes/
+│   ├── auth.routes.ts
+│   ├── user.routes.ts
+│   ├── job.routes.ts
+│   ├── application.routes.ts
+│   ├── company.routes.ts
+│   ├── resume.routes.ts
+│   ├── notification.routes.ts
+│   └── admin.routes.ts
+│
+├── services/
+│   ├── auth.service.ts
+│   ├── user.service.ts
+│   ├── job.service.ts
+│   ├── application.service.ts
+│   ├── company.service.ts
+│   ├── resume.service.ts
+│   ├── notification.service.ts
+│   └── analytics.service.ts
+│
+├── repositories/
+│   ├── user.repository.ts
+│   ├── job.repository.ts
+│   ├── application.repository.ts
+│   ├── company.repository.ts
+│   ├── resume.repository.ts
+│   └── notification.repository.ts
+│
+├── validators/
+│   ├── auth.validator.ts
+│   ├── user.validator.ts
+│   ├── job.validator.ts
+│   ├── application.validator.ts
+│   └── company.validator.ts
+│
+├── models/
+├── types/
+├── utils/
+├── constants/
+├── app.ts
+└── server.ts
+
+Use a centralized error handling system.
+
+Use consistent API response structures.
+
+==================================================
+6. DATABASE
+==================================================
+
+Use PostgreSQL.
+
+Create a properly normalized relational database.
+
+Main tables:
+
+1. users
+2. companies
+3. jobs
+4. applications
+5. saved_jobs
+6. resumes
+7. skills
+8. user_skills
+9. notifications
+
+Users:
+
+users
+- id UUID PRIMARY KEY
+- first_name
+- last_name
+- email UNIQUE
+- password_hash
+- role
+- phone
+- profile_image
+- bio
+- location
+- created_at
+- updated_at
+
+Roles:
+
+student
+recruiter
+admin
+
+Companies:
+
+companies
+- id UUID PRIMARY KEY
+- recruiter_id
+- name
+- description
+- website
+- logo
+- industry
+- location
+- created_at
+- updated_at
+
+Jobs:
+
+jobs
+- id UUID PRIMARY KEY
+- company_id
+- recruiter_id
+- title
+- description
+- job_type
+- work_mode
+- location
+- salary_min
+- salary_max
+- experience_level
+- application_deadline
+- status
+- created_at
+- updated_at
+
+Applications:
+
+applications
+- id UUID PRIMARY KEY
+- job_id
+- student_id
+- resume_id
+- cover_letter
+- status
+- applied_at
+- updated_at
+
+Application statuses:
+
+APPLIED
+REVIEWING
+SHORTLISTED
+INTERVIEW
+SELECTED
+REJECTED
+WITHDRAWN
+
+Saved jobs:
+
+saved_jobs
+- id
+- student_id
+- job_id
+- created_at
+
+Resumes:
+
+resumes
+- id
+- student_id
+- file_url
+- file_name
+- is_default
+- created_at
+- updated_at
+
+Skills:
+
+skills
+- id
+- name
+
+User skills:
+
+user_skills
+- user_id
+- skill_id
+
+Notifications:
+
+notifications
+- id
+- user_id
+- title
+- message
+- type
+- is_read
+- created_at
+
+Use UUIDs where appropriate.
+
+Add:
+
+- primary keys
+- foreign keys
+- unique constraints
+- indexes
+- NOT NULL constraints
+- appropriate ON DELETE behavior
+
+Do not create unnecessary duplicate data.
+
+==================================================
+7. DATABASE RELATIONSHIPS
+==================================================
+
+Implement these relationships:
+
+User → Company
+User → Jobs
+Company → Jobs
+User → Applications
+Job → Applications
+Student → Saved Jobs
+Student → Resume
+Student → Skills
+User → Notifications
+
+Make sure foreign keys are correctly configured.
+
+==================================================
+8. AUTHENTICATION
+==================================================
+
+Implement secure authentication.
+
+Features:
+
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+GET /api/auth/me
+
+Registration must validate:
+
+- first name
+- last name
+- email
+- password
+- role
+
+Passwords must NEVER be stored in plain text.
+
+Use bcrypt.
+
+Use JWT.
+
+Prefer secure HTTP-only cookies for authentication.
+
+JWT should contain:
+
+userId
+role
+
+Implement authentication middleware.
+
+Every protected API must verify authentication.
+
+==================================================
+9. RBAC
+==================================================
+
+Implement Role-Based Access Control.
+
+Student:
+
+- View jobs
+- Search jobs
+- Filter jobs
+- Save jobs
+- Apply
+- View applications
+- Withdraw application
+- Manage profile
+- Upload resume
+
+Recruiter:
+
+- Manage company
+- Create jobs
+- Update jobs
+- Delete/close jobs
+- View applicants
+- Update application status
+- View recruiter analytics
+
+Admin:
+
+- View users
+- Manage users
+- Manage recruiters
+- Manage companies
+- Manage jobs
+- Manage applications
+- View platform analytics
+
+Frontend route protection is NOT enough.
+
+Backend must also verify roles.
+
+Also verify resource ownership.
+
+For example:
+
+A recruiter cannot modify another recruiter's job.
+
+A student cannot modify another student's application.
+
+==================================================
+10. API DESIGN
+==================================================
+
+Use:
+
+/api/auth
+/api/users
+/api/jobs
+/api/applications
+/api/companies
+/api/resumes
+/api/notifications
+/api/admin
+
+Job APIs:
+
+GET /api/jobs
+GET /api/jobs/:id
+POST /api/jobs
+PUT /api/jobs/:id
+DELETE /api/jobs/:id
+
+Application APIs:
+
+POST /api/jobs/:jobId/apply
+GET /api/applications
+GET /api/applications/:id
+PATCH /api/applications/:id/status
+DELETE /api/applications/:id
+
+User APIs:
+
+GET /api/users/me
+PUT /api/users/me
+
+Resume:
+
+POST /api/resumes
+GET /api/resumes
+DELETE /api/resumes/:id
+
+Admin:
+
+GET /api/admin/users
+GET /api/admin/jobs
+GET /api/admin/applications
+GET /api/admin/analytics
+
+==================================================
+11. SEARCH / FILTER / PAGINATION
+==================================================
+
+Jobs must support:
+
+search
+location
+work mode
+job type
+experience
+salary
+skills
+sorting
+pagination
+
+Example:
+
+GET /api/jobs?search=react
+
+GET /api/jobs?location=Bangalore
+
+GET /api/jobs?workMode=remote
+
+GET /api/jobs?page=1&limit=10
+
+Support combined filters.
+
+Return pagination metadata:
+
+{
+  jobs: [],
+  pagination: {
+    page,
+    limit,
+    total,
+    totalPages
+  }
+}
+
+Filtering must happen on the backend/database.
+
+Do NOT fetch every job and filter only in React.
+
+==================================================
+12. FRONTEND PAGES
+==================================================
+
+PUBLIC:
+
+/
+ /jobs
+ /jobs/:id
+ /companies
+ /login
+ /register
+
+STUDENT:
+
+/student/dashboard
+/student/jobs
+/student/saved
+/student/applications
+/student/profile
+/student/resume
+/student/settings
+
+RECRUITER:
+
+/recruiter/dashboard
+/recruiter/company
+/recruiter/jobs
+/recruiter/jobs/create
+/recruiter/jobs/:id/edit
+/recruiter/applicants
+/recruiter/analytics
+
+ADMIN:
+
+/admin/dashboard
+/admin/users
+/admin/recruiters
+/admin/companies
+/admin/jobs
+/admin/applications
+/admin/analytics
+/admin/settings
+
+==================================================
+13. STUDENT DASHBOARD
+==================================================
+
+Create a modern dashboard.
+
+Display:
+
+- Total applications
+- Saved jobs
+- Shortlisted applications
+- Interviews
+- Selected applications
+- Rejected applications
+- Profile completion
+- Recommended jobs
+- Recent applications
+
+Application status should be visually represented.
+
+==================================================
+14. RECRUITER DASHBOARD
+==================================================
+
+Display:
+
+- Total jobs
+- Active jobs
+- Total applicants
+- Shortlisted
+- Interviews
+- Selected
+- Recent applications
+- Recent jobs
+
+Include charts.
+
+==================================================
+15. ADMIN DASHBOARD
+==================================================
+
+Display:
+
+- Total users
+- Total students
+- Total recruiters
+- Total companies
+- Total jobs
+- Total applications
+
+Charts:
+
+- Users over time
+- Applications over time
+- Jobs posted
+- Application status distribution
+
+Use Recharts.
+
+==================================================
+16. JOB LISTING UI
+==================================================
+
+Create a professional job search page.
+
+Include:
+
+Search bar
+
+Filters:
+
+- Location
+- Work Mode
+- Job Type
+- Experience
+- Salary
+- Skills
+
+Sort:
+
+- Newest
+- Oldest
+- Salary high to low
+- Salary low to high
+
+Job cards should display:
+
+- Company logo
+- Job title
+- Company
+- Location
+- Work mode
+- Job type
+- Salary
+- Skills
+- Posted date
+- Save button
+- Apply button
+
+==================================================
+17. JOB DETAILS PAGE
+==================================================
+
+Display:
+
+- Job title
+- Company
+- Description
+- Requirements
+- Skills
+- Salary
+- Location
+- Work mode
+- Job type
+- Experience
+- Deadline
+- Apply button
+- Save button
+
+Show appropriate state if:
+
+- Already applied
+- Application deadline passed
+- Job closed
+
+==================================================
+18. APPLICATION TRACKING
+==================================================
+
+Create a visual application tracking system.
+
+Example:
+
+Applied
+   ↓
+Reviewing
+   ↓
+Shortlisted
+   ↓
+Interview
+   ↓
+Selected
+
+Rejected should have a separate state.
+
+Student should be able to see:
+
+- Job
+- Company
+- Date applied
+- Current status
+- Resume used
+- Cover letter
+- Last updated
+
+==================================================
+19. PROFILE
+==================================================
+
+Student profile should support:
+
+- Profile photo
+- Name
+- Email
+- Phone
+- Location
+- Bio
+- Education
+- Skills
+- Experience
+- Projects
+- GitHub
+- LinkedIn
+- Resume
+
+Add profile completion percentage.
+
+==================================================
+20. RESUME UPLOAD
+==================================================
+
+Allow students to upload resumes.
+
+Allowed format:
+
+PDF
+
+Validate:
+
+- File type
+- File size
+
+Use Multer on backend.
+
+Do not store huge files directly inside PostgreSQL.
+
+Store file metadata and URL/path in database.
+
+==================================================
+21. NOTIFICATIONS
+==================================================
+
+Create notifications for:
+
+- Application submitted
+- Application status changed
+- Shortlisted
+- Interview
+- Selected
+- Rejected
+- Job deadline reminders
+
+Users should be able to:
+
+- View notifications
+- Mark as read
+- Mark all as read
+
+==================================================
+22. UI / UX
+==================================================
+
+The UI should look like a modern professional career platform.
+
+Design principles:
+
+- Clean
+- Minimal
+- Professional
+- Responsive
+- Accessible
+- Consistent spacing
+- Clear typography
+- Good empty states
+- Loading states
+- Error states
+- Toast notifications
+- Skeleton loaders
+
+Support:
+
+Light Mode
+Dark Mode
+
+Use reusable UI components.
+
+Do not create every button/input/card separately.
+
+==================================================
+23. RESPONSIVE DESIGN
+==================================================
+
+Must work on:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+Important:
+
+Do not simply shrink desktop UI.
+
+Create proper responsive layouts.
+
+Student/recruiter/admin dashboards should have responsive sidebars.
+
+Mobile navigation should be usable.
+
+==================================================
+24. API RESPONSE FORMAT
+==================================================
+
+Use consistent responses.
+
+Success:
+
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": {}
+}
+
+Error:
+
+{
+  "success": false,
+  "message": "Something went wrong"
+}
+
+Validation:
+
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {}
+}
+
+==================================================
+25. VALIDATION
+==================================================
+
+Use Zod.
+
+Validate:
+
+- Registration
+- Login
+- Profile
+- Job creation
+- Job update
+- Applications
+- Company
+- Query parameters
+
+Never trust frontend validation alone.
+
+==================================================
+26. SECURITY
+==================================================
+
+Implement:
+
+- bcrypt password hashing
+- JWT authentication
+- HTTP-only cookies
+- CORS
+- Helmet
+- input validation
+- role authorization
+- resource ownership checks
+- rate limiting where appropriate
+- parameterized SQL queries
+- file upload validation
+- file size limits
+- secure environment variables
+
+Never expose:
+
+- password_hash
+- JWT secret
+- database credentials
+
+Never commit .env.
+
+==================================================
+27. ENVIRONMENT VARIABLES
+==================================================
+
+Backend:
+
+PORT=
+DATABASE_URL=
+JWT_SECRET=
+CLIENT_URL=
+NODE_ENV=
+
+Frontend:
+
+VITE_API_URL=
+
+Create .env.example files.
+
+==================================================
+28. ERROR HANDLING
+==================================================
+
+Create centralized backend error handling.
+
+Handle:
+
+- 400 Bad Request
+- 401 Unauthorized
+- 403 Forbidden
+- 404 Not Found
+- 409 Conflict
+- 422 Validation Error
+- 500 Internal Server Error
+
+Frontend should display friendly error messages.
+
+==================================================
+29. LOADING / EMPTY STATES
+==================================================
+
+Every major page should support:
+
+Loading state
+Error state
+Empty state
+Success state
+
+Example:
+
+No jobs found.
+
+Try changing your filters.
+
+==================================================
+30. SEED DATA
+==================================================
+
+Create seed data for development.
+
+Include:
+
+- Admin user
+- Recruiter users
+- Student users
+- Companies
+- Jobs
+- Skills
+- Applications
+
+Use clearly documented development credentials.
+
+Do NOT use real credentials.
+
+==================================================
+31. TESTING
+==================================================
+
+Create backend tests for:
+
+Authentication
+Registration
+Login
+JWT
+RBAC
+Jobs
+Applications
+Authorization
+Validation
+
+Test cases should include:
+
+- valid registration
+- duplicate email
+- invalid password
+- invalid JWT
+- student accessing recruiter endpoint
+- recruiter accessing admin endpoint
+- unauthorized job update
+- unauthorized application update
+- valid job creation
+- valid application
+
+==================================================
+32. DOCKER
+==================================================
+
+Create Docker support.
+
+Services:
+
+frontend
+backend
+postgres
+
+Create:
+
+Dockerfile for frontend
+Dockerfile for backend
+docker-compose.yml
+
+Development should be runnable using:
+
+docker compose up
+
+==================================================
+33. GITHUB ACTIONS
+==================================================
+
+Create CI/CD workflow.
+
+On push/pull request:
+
+1. Install dependencies
+2. Lint
+3. Run tests
+4. Build frontend
+5. Build backend
+
+Do not deploy broken builds.
+
+==================================================
+34. DOCUMENTATION
+==================================================
+
+Create:
+
+docs/
+├── architecture.md
+├── database.md
+├── authentication.md
+├── api-documentation.md
+├── deployment.md
+└── testing.md
+
+Also create a detailed README.md.
+
+README must contain:
+
+- Project overview
+- Features
+- Tech stack
+- Architecture
+- Folder structure
+- Installation
+- Environment variables
+- Database setup
+- Running locally
+- API documentation
+- Testing
+- Docker
+- Deployment
+- Screenshots
+- Demo
+- Future improvements
+
+==================================================
+35. GIT COMMIT STRATEGY
+==================================================
+
+Use clean commits.
+
+Examples:
+
+chore: initialize frontend
+chore: initialize backend
+feat: add database configuration
+feat: implement authentication
+feat: implement RBAC
+feat: implement job management
+feat: implement applications
+feat: add student dashboard
+feat: add recruiter dashboard
+feat: add admin dashboard
+feat: add resume management
+feat: add search and filters
+feat: add analytics
+test: add authentication tests
+chore: add docker configuration
+ci: add github actions
+docs: add project documentation
+
+==================================================
+36. DEVELOPMENT STRATEGY
+==================================================
+
+IMPORTANT:
+
+Do NOT attempt to generate the entire application blindly in one step.
+
+Build incrementally.
+
+Follow this exact order:
+
+PHASE 1
+Project configuration
+
+PHASE 2
+Backend foundation
+
+PHASE 3
+PostgreSQL database
+
+PHASE 4
+Authentication
+
+PHASE 5
+RBAC
+
+PHASE 6
+User profiles
+
+PHASE 7
+Company management
+
+PHASE 8
+Job management
+
+PHASE 9
+Search/filter/pagination
+
+PHASE 10
+Saved jobs
+
+PHASE 11
+Applications
+
+PHASE 12
+Resume management
+
+PHASE 13
+Student dashboard
+
+PHASE 14
+Recruiter dashboard
+
+PHASE 15
+Admin dashboard
+
+PHASE 16
+Notifications
+
+PHASE 17
+Analytics
+
+PHASE 18
+Testing
+
+PHASE 19
+Docker
+
+PHASE 20
+GitHub Actions
+
+PHASE 21
+Deployment
+
+PHASE 22
+Documentation
+
+==================================================
+37. IMPORTANT CODING RULES
+==================================================
+
+Before writing code:
+
+1. Inspect the existing frontend and backend folders.
+2. Do not overwrite existing working code without checking it.
+3. Reuse existing configuration where appropriate.
+4. Explain what files you are creating.
+5. Explain dependencies before installing them.
+6. Keep frontend and backend independent.
+7. Use TypeScript properly.
+8. Avoid unnecessary complexity.
+9. Do not use mock APIs once the real backend exists.
+10. Do not hardcode production values.
+11. Do not use fake authentication.
+12. Do not put secrets in source code.
+13. Do not use localStorage for sensitive authentication tokens if HTTP-only cookies can be used.
+14. Do not use "any" unnecessarily.
+15. Do not create duplicate components.
+16. Keep naming consistent.
+
+==================================================
+38. IMPORTANT DATABASE RULES
+==================================================
+
+Before creating tables:
+
+- Check foreign key dependencies.
+- Create parent tables before child tables.
+- Add indexes to commonly searched columns.
+- Use UUIDs consistently.
+- Use timestamps.
+- Add unique constraints where needed.
+- Prevent duplicate applications.
+- Prevent duplicate saved jobs.
+- Ensure a recruiter can only manage their own jobs.
+- Ensure a student can only manage their own applications/resumes.
+
+==================================================
+39. IMPORTANT FRONTEND RULES
+==================================================
+
+Use:
+
+React Query for server state.
+
+React Hook Form + Zod for forms.
+
+Axios for HTTP requests.
+
+React Router for routing.
+
+Reusable components.
+
+Do not put huge components in one file.
+
+If a page becomes large, split it into components.
+
+==================================================
+40. STARTING REQUIREMENT
+==================================================
+
+Since I have already created:
+
+SkillBridge/
+├── frontend/
+└── backend/
+
+START by inspecting these folders.
+
+Do NOT immediately generate the entire application.
+
+First:
+
+1. Inspect frontend.
+2. Inspect backend.
+3. Determine whether they are empty or already initialized.
+4. Tell me what you found.
+5. Create/configure the frontend if needed.
+6. Create/configure the backend if needed.
+7. Configure TypeScript.
+8. Configure Tailwind.
+9. Configure Express.
+10. Configure environment variables.
+11. Configure PostgreSQL connection.
+12. Create a basic health-check endpoint.
+13. Create a basic frontend page.
+14. Make sure frontend and backend run successfully.
+15. Then stop and wait for the next phase.
+
+For every phase:
+
+- Explain what you are doing.
+- Show files created/modified.
+- Write complete working code.
+- Do not leave pseudo-code.
+- Do not use placeholders like "implement this later" unless absolutely unavoidable.
+- Verify imports.
+- Verify TypeScript.
+- Verify package dependencies.
+- Verify that the project builds.
+
+After completing each phase, provide:
+
+PHASE STATUS:
+- Completed
+- Files created
+- Files modified
+- Dependencies installed
+- How to run
+- How to test
+- Any remaining issues
+
+Then wait for my instruction before moving to the next major phase.
+
+START WITH PHASE 1 ONLY.

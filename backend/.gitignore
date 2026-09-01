@@ -1,0 +1,83 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+build
+dist-ssr
+dist-electron
+*.local
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+build/
+dist/
+dist-electron/
+
+# Electron
+out/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
+
+# IDE configs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Optional: coverage reports
+coverage/
+
+# Optional: system files
+*.swp
+*.bak
+*.tmp
+
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+----------------------------------------
+zalima e commerce website
+VITE_BASE_URI = http://localhost:5000
+VITE_BASE_URL = http://localhost:5000
+VITE_GOOGLE_CLIENT_ID=655188747640-6n6gku3eotrfjff45qpfv3en1i9h8kge.apps.googleusercontent.com
+VITE_FACEBOOK_APP_ID=3931105830487499
+SUPERADMIN_SECRET_KEY=ewf2g34g35hg4rgeg34
