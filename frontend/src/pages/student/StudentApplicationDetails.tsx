@@ -4,7 +4,7 @@ import { applicationService } from '../../services/application.service';
 import type { StudentApplicationDetails } from '../../types/application.types';
 import { ApplicationStatusBadge } from '../../components/applications/ApplicationStatusBadge';
 import { ApplicationTimeline } from '../../components/applications/ApplicationTimeline';
-import { ArrowLeft, Building, FileText, Calendar, AlertOctagon, Download } from 'lucide-react';
+import { ArrowLeft, Building, FileText, AlertOctagon, Download } from 'lucide-react';
 
 export const StudentApplicationDetailsPage: React.FC = () => {
   const { applicationId } = useParams<{ applicationId: string }>();

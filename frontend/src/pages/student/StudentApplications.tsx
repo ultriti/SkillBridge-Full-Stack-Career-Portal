@@ -4,7 +4,7 @@ import { applicationService } from '../../services/application.service';
 import type { StudentApplicationDetails, ApplicationStatus, ApplicationPagination } from '../../types/application.types';
 import { ApplicationStatusBadge } from '../../components/applications/ApplicationStatusBadge';
 import { Pagination } from '../../components/Pagination';
-import { Briefcase, Building, Calendar, MapPin, ExternalLink, Filter } from 'lucide-react';
+import { Briefcase, Building, Calendar, MapPin, ExternalLink } from 'lucide-react';
 
 export const StudentApplications: React.FC = () => {
   const [applications, setApplications] = useState<StudentApplicationDetails[]>([]);
