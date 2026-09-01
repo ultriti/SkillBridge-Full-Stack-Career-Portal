@@ -1,7 +1,9 @@
 import jobRepository, { PublicJobFilterDTO, JobWithCompany, AdminJobWithDetails } from '../repositories/job.repository';
 import companyRepository from '../repositories/company.repository';
 import savedJobRepository from '../repositories/saved-job.repository';
+import jobAlertService from './job-alert.service';
 import { JobStatus, JobType, WorkMode } from '../types/database';
+import { AdvancedJobSearchFilters } from '../types/job-search.types';
 
 export interface CreateJobInput {
   title: string;
@@ -33,7 +35,6 @@ export class JobService {
    * Create a new job posting for recruiter
    */
   async createJob(recruiterId: string, input: CreateJobInput) {
-    console.log('recruiterId', recruiterId)
     const company = await companyRepository.findByRecruiterId(recruiterId);
     if (!company) {
       const error: any = new Error('Please create your company profile before creating a job.');
@@ -56,7 +57,20 @@ export class JobService {
       status: input.status || 'DRAFT',
     });
 
-    return jobRepository.findJobWithCompany(job.id);
+    const fullJob = await jobRepository.findJobWithCompany(job.id);
+
+    // If published directly as ACTIVE, trigger job alert processing (non-blocking)
+    if (job.status === 'ACTIVE') {
+      (async () => {
+        try {
+          await jobAlertService.processJobAlertsForJob(job.id);
+        } catch (alertErr) {
+          console.error('Job alert processing error on create:', alertErr);
+        }
+      })();
+    }
+
+    return fullJob;
   }
 
   /**
@@ -66,7 +80,7 @@ export class JobService {
     const { status, page, limit } = query;
     const jobs = await jobRepository.findJobsByRecruiter(recruiterId, status, page, limit);
     const total = await jobRepository.countJobsByRecruiter(recruiterId, status);
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / limit) || 1;
 
     return {
       jobs,
@@ -126,7 +140,18 @@ export class JobService {
     }
 
     await jobRepository.updateStatus(jobId, 'ACTIVE');
-    return jobRepository.findJobWithCompany(jobId);
+    const published = await jobRepository.findJobWithCompany(jobId);
+
+    // Trigger Job Alerts (non-blocking)
+    (async () => {
+      try {
+        await jobAlertService.processJobAlertsForJob(jobId);
+      } catch (alertErr) {
+        console.error('Job alert processing error on publish:', alertErr);
+      }
+    })();
+
+    return published;
   }
 
   /**
@@ -160,12 +185,14 @@ export class JobService {
   }
 
   /**
-   * Get public active job listings with optional student saved status
+   * Advanced Job Discovery & Search
    */
-  async getPublicJobs(filters: PublicJobFilterDTO, studentId?: string) {
-    const jobs = await jobRepository.findPublicJobs(filters);
-    const total = await jobRepository.countPublicJobs(filters);
-    const totalPages = Math.ceil(total / filters.limit);
+  async searchPublicJobsAdvanced(filters: AdvancedJobSearchFilters, studentId?: string) {
+    const jobs = await jobRepository.findAdvancedPublicJobs(filters);
+    const total = await jobRepository.countAdvancedPublicJobs(filters);
+    const limit = filters.limit && filters.limit >= 1 ? Math.min(filters.limit, 50) : 20;
+    const page = filters.page && filters.page >= 1 ? filters.page : 1;
+    const totalPages = Math.ceil(total / limit) || 1;
 
     let savedJobIds = new Set<string>();
     if (studentId && jobs.length > 0) {
@@ -181,12 +208,33 @@ export class JobService {
     return {
       jobs: formattedJobs,
       pagination: {
-        page: filters.page,
-        limit: filters.limit,
+        page,
+        limit,
         total,
         totalPages,
       },
     };
+  }
+
+  /**
+   * Get public active job listings (Legacy compatibility wrapper)
+   */
+  async getPublicJobs(filters: PublicJobFilterDTO, studentId?: string) {
+    return this.searchPublicJobsAdvanced(
+      {
+        q: filters.search,
+        jobType: filters.jobType,
+        workMode: filters.workMode,
+        location: filters.location,
+        experienceLevel: filters.experienceLevel,
+        salaryMin: filters.salaryMin,
+        salaryMax: filters.salaryMax,
+        sortBy: filters.sortBy === 'createdAt' ? 'newest' : (filters.sortBy as any),
+        page: filters.page,
+        limit: filters.limit,
+      },
+      studentId
+    );
   }
 
   /**
@@ -218,7 +266,7 @@ export class JobService {
     const { status, search, page, limit } = query;
     const jobs = await jobRepository.findAllAdminJobs(status, search, page, limit);
     const total = await jobRepository.countAllAdminJobs(status, search);
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / limit) || 1;
 
     return {
       jobs,

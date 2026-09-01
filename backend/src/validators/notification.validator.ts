@@ -10,6 +10,7 @@ export const notificationTypes: NotificationType[] = [
   'APPLICATION_REJECTED',
   'APPLICATION_WITHDRAWN',
   'JOB_PUBLISHED',
+  'JOB_ALERT',
   'PROFILE_UPDATE',
   'SYSTEM',
 ];
@@ -29,6 +30,7 @@ export const notificationQuerySchema = z.object({
       'APPLICATION_REJECTED',
       'APPLICATION_WITHDRAWN',
       'JOB_PUBLISHED',
+      'JOB_ALERT',
       'PROFILE_UPDATE',
       'SYSTEM',
     ] as const)

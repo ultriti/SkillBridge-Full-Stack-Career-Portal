@@ -11,6 +11,7 @@ import { CreateJob } from './pages/recruiter/CreateJob';
 import { EditJob } from './pages/recruiter/EditJob';
 import { CompanySetup } from './pages/recruiter/CompanySetup';
 import { SavedJobs } from './pages/student/SavedJobs';
+import { SavedSearches } from './pages/student/SavedSearches';
 import { AdminJobs } from './pages/admin/AdminJobs';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
@@ -85,6 +86,14 @@ export function App() {
                   element={
                     <ProtectedRoute allowedRoles={['student']}>
                       <SavedJobs />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/jobs/saved-searches"
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <SavedSearches />
                     </ProtectedRoute>
                   }
                 />

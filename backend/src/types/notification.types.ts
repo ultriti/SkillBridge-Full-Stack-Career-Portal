@@ -7,6 +7,7 @@ export type NotificationType =
   | 'APPLICATION_REJECTED'
   | 'APPLICATION_WITHDRAWN'
   | 'JOB_PUBLISHED'
+  | 'JOB_ALERT'
   | 'PROFILE_UPDATE'
   | 'SYSTEM';
 

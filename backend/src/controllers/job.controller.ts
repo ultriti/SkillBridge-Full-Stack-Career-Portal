@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import jobService from '../services/job.service';
+import searchHistoryService from '../services/search-history.service';
 import {
   createJobSchema,
   updateJobSchema,
@@ -7,6 +8,7 @@ import {
   recruiterJobQuerySchema,
   adminJobQuerySchema,
 } from '../validators/job.validator';
+import { advancedSearchQuerySchema } from '../validators/job-search.validator';
 import { ZodError } from 'zod';
 
 export class JobController {
@@ -19,8 +21,6 @@ export class JobController {
         res.status(401).json({ success: false, message: 'Authentication required' });
         return;
       }
-
-      console.log('req.body', req.body)
 
       const validatedData = createJobSchema.parse(req.body);
       const job = await jobService.createJob(req.user.id, validatedData);
@@ -172,7 +172,38 @@ export class JobController {
   }
 
   /**
-   * Public: List public active jobs
+   * Advanced Public Job Discovery & Search
+   */
+  async searchJobs(req: Request, res: Response): Promise<void> {
+    try {
+      const filters = advancedSearchQuerySchema.parse(req.query);
+      const studentId = req.user && req.user.role === 'student' ? req.user.id : undefined;
+
+      const result = await jobService.searchPublicJobsAdvanced(filters, studentId);
+
+      // Record search history if user is authenticated student and query/filters are provided
+      if (req.user && (filters.q || filters.location || filters.jobType || filters.workMode || (filters.skills && filters.skills.length > 0))) {
+        (async () => {
+          try {
+            await searchHistoryService.recordSearch(req.user!.id, filters.q, filters);
+          } catch (historyErr) {
+            // Ignore history recording failures
+          }
+        })();
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Jobs retrieved successfully.',
+        data: result,
+      });
+    } catch (error: any) {
+      this.handleError(res, error);
+    }
+  }
+
+  /**
+   * Public: List public active jobs (Legacy compatibility)
    */
   async getPublicJobs(req: Request, res: Response): Promise<void> {
     try {

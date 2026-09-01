@@ -1,5 +1,6 @@
 import pool from '../config/db';
 import { Job, JobType, WorkMode, JobStatus } from '../types/database';
+import { AdvancedJobSearchFilters, JobSearchSort } from '../types/job-search.types';
 
 export interface CreateJobDTO {
   company_id: string;
@@ -38,6 +39,7 @@ export interface JobWithCompany extends Job {
     industry?: string | null;
     location?: string | null;
   };
+  skills?: Array<{ id: string; name: string }>;
 }
 
 export interface AdminJobWithDetails extends JobWithCompany {
@@ -91,7 +93,7 @@ export class JobRepository {
   }
 
   /**
-   * Find job with company details by ID
+   * Find job with company details and skills by ID
    */
   async findJobWithCompany(id: string): Promise<JobWithCompany | null> {
     const query = `
@@ -103,7 +105,16 @@ export class JobRepository {
           'logo', c.logo,
           'industry', c.industry,
           'location', c.location
-        ) AS company
+        ) AS company,
+        COALESCE(
+          (
+            SELECT json_agg(json_build_object('id', s.id, 'name', s.name))
+            FROM job_skills js
+            JOIN skills s ON js.skill_id = s.id
+            WHERE js.job_id = j.id
+          ),
+          '[]'::json
+        ) AS skills
       FROM jobs j
       INNER JOIN companies c ON j.company_id = c.id
       WHERE j.id = $1
@@ -125,7 +136,16 @@ export class JobRepository {
           'logo', c.logo,
           'industry', c.industry,
           'location', c.location
-        ) AS company
+        ) AS company,
+        COALESCE(
+          (
+            SELECT json_agg(json_build_object('id', s.id, 'name', s.name))
+            FROM job_skills js
+            JOIN skills s ON js.skill_id = s.id
+            WHERE js.job_id = j.id
+          ),
+          '[]'::json
+        ) AS skills
       FROM jobs j
       INNER JOIN companies c ON j.company_id = c.id
       WHERE j.id = $1 AND j.status = 'ACTIVE'
@@ -135,7 +155,7 @@ export class JobRepository {
   }
 
   /**
-   * Find jobs owned by a recruiter with pagination and status filter
+   * Find jobs owned by a recruiter
    */
   async findJobsByRecruiter(
     recruiterId: string,
@@ -162,7 +182,16 @@ export class JobRepository {
           'logo', c.logo,
           'industry', c.industry,
           'location', c.location
-        ) AS company
+        ) AS company,
+        COALESCE(
+          (
+            SELECT json_agg(json_build_object('id', s.id, 'name', s.name))
+            FROM job_skills js
+            JOIN skills s ON js.skill_id = s.id
+            WHERE js.job_id = j.id
+          ),
+          '[]'::json
+        ) AS skills
       FROM jobs j
       INNER JOIN companies c ON j.company_id = c.id
       WHERE ${whereClause}
@@ -175,7 +204,7 @@ export class JobRepository {
   }
 
   /**
-   * Count total jobs owned by a recruiter
+   * Count total jobs owned by recruiter
    */
   async countJobsByRecruiter(recruiterId: string, status?: JobStatus): Promise<number> {
     const values: any[] = [recruiterId];
@@ -260,24 +289,42 @@ export class JobRepository {
   }
 
   /**
-   * Find public ACTIVE jobs with search, filtering, pagination, and sorting
+   * Advanced PostgreSQL Full-Text Search and Multi-Criteria Filtering
    */
-  async findPublicJobs(filters: PublicJobFilterDTO): Promise<JobWithCompany[]> {
-    const { whereClause, values } = this.buildPublicWhereClause(filters);
+  async findAdvancedPublicJobs(filters: AdvancedJobSearchFilters): Promise<JobWithCompany[]> {
+    const { whereClause, values, rankColumn } = this.buildAdvancedWhereClause(filters);
 
-    // Allowlist mapping for safe sorting
-    const sortColumns: Record<string, string> = {
-      createdAt: 'j.created_at',
-      salaryMin: 'j.salary_min',
-      salaryMax: 'j.salary_max',
-      applicationDeadline: 'j.application_deadline',
-    };
+    let sortExpression = 'j.created_at DESC, j.id DESC';
+    const sortBy = filters.sortBy || (filters.q ? 'relevance' : 'newest');
 
-    const sortColumn = sortColumns[filters.sortBy] || 'j.created_at';
-    const sortOrder = filters.sortOrder.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+    switch (sortBy) {
+      case 'relevance':
+        if (filters.q && rankColumn) {
+          sortExpression = `${rankColumn} DESC, j.created_at DESC, j.id DESC`;
+        } else {
+          sortExpression = 'j.created_at DESC, j.id DESC';
+        }
+        break;
+      case 'oldest':
+        sortExpression = 'j.created_at ASC, j.id ASC';
+        break;
+      case 'salary_high':
+        sortExpression = 'j.salary_max DESC NULLS LAST, j.salary_min DESC NULLS LAST, j.id DESC';
+        break;
+      case 'salary_low':
+        sortExpression = 'j.salary_min ASC NULLS LAST, j.salary_max ASC NULLS LAST, j.id DESC';
+        break;
+      case 'newest':
+      default:
+        sortExpression = 'j.created_at DESC, j.id DESC';
+        break;
+    }
 
-    const offset = (filters.page - 1) * filters.limit;
-    values.push(filters.limit, offset);
+    const page = filters.page && filters.page >= 1 ? filters.page : 1;
+    const limit = filters.limit && filters.limit >= 1 ? Math.min(filters.limit, 50) : 20;
+    const offset = (page - 1) * limit;
+
+    values.push(limit, offset);
 
     const query = `
       SELECT 
@@ -288,11 +335,20 @@ export class JobRepository {
           'logo', c.logo,
           'industry', c.industry,
           'location', c.location
-        ) AS company
+        ) AS company,
+        COALESCE(
+          (
+            SELECT json_agg(json_build_object('id', s.id, 'name', s.name))
+            FROM job_skills js
+            JOIN skills s ON js.skill_id = s.id
+            WHERE js.job_id = j.id
+          ),
+          '[]'::json
+        ) AS skills
       FROM jobs j
       INNER JOIN companies c ON j.company_id = c.id
       WHERE ${whereClause}
-      ORDER BY ${sortColumn} ${sortOrder} NULLS LAST
+      ORDER BY ${sortExpression}
       LIMIT $${values.length - 1} OFFSET $${values.length}
     `;
 
@@ -301,13 +357,13 @@ export class JobRepository {
   }
 
   /**
-   * Count total public ACTIVE jobs matching search and filters
+   * Count total public jobs matching advanced search filters
    */
-  async countPublicJobs(filters: PublicJobFilterDTO): Promise<number> {
-    const { whereClause, values } = this.buildPublicWhereClause(filters);
+  async countAdvancedPublicJobs(filters: AdvancedJobSearchFilters): Promise<number> {
+    const { whereClause, values } = this.buildAdvancedWhereClause(filters);
 
     const query = `
-      SELECT COUNT(*)
+      SELECT COUNT(DISTINCT j.id)
       FROM jobs j
       INNER JOIN companies c ON j.company_id = c.id
       WHERE ${whereClause}
@@ -436,22 +492,32 @@ export class JobRepository {
   }
 
   /**
-   * Helper method to construct parameterized SQL WHERE clause for public job search
+   * Build PostgreSQL Full-Text Search and filtering WHERE clause
    */
-  private buildPublicWhereClause(filters: PublicJobFilterDTO) {
+  private buildAdvancedWhereClause(filters: AdvancedJobSearchFilters) {
     const conditions: string[] = ["j.status = 'ACTIVE'"];
     const values: any[] = [];
+    let rankColumn: string | undefined = undefined;
 
-    if (filters.search) {
-      values.push(`%${filters.search}%`);
-      const p = values.length;
+    // Full-Text Search using websearch_to_tsquery
+    if (filters.q && filters.q.trim().length > 0) {
+      values.push(filters.q.trim());
+      const queryParamIdx = values.length;
+      values.push(`%${filters.q.trim()}%`);
+      const ilikeParamIdx = values.length;
+
+      rankColumn = `ts_rank(j.search_vector, websearch_to_tsquery('english', $${queryParamIdx}))`;
+
       conditions.push(`(
-        j.title ILIKE $${p} 
-        OR j.description ILIKE $${p} 
-        OR j.location ILIKE $${p} 
-        OR j.experience_level ILIKE $${p}
-        OR c.name ILIKE $${p}
+        j.search_vector @@ websearch_to_tsquery('english', $${queryParamIdx})
+        OR j.title ILIKE $${ilikeParamIdx}
+        OR c.name ILIKE $${ilikeParamIdx}
       )`);
+    }
+
+    if (filters.location && filters.location.trim().length > 0) {
+      values.push(`%${filters.location.trim()}%`);
+      conditions.push(`j.location ILIKE $${values.length}`);
     }
 
     if (filters.jobType) {
@@ -464,13 +530,8 @@ export class JobRepository {
       conditions.push(`j.work_mode = $${values.length}`);
     }
 
-    if (filters.location) {
-      values.push(`%${filters.location}%`);
-      conditions.push(`j.location ILIKE $${values.length}`);
-    }
-
-    if (filters.experienceLevel) {
-      values.push(`%${filters.experienceLevel}%`);
+    if (filters.experienceLevel && filters.experienceLevel.trim().length > 0) {
+      values.push(`%${filters.experienceLevel.trim()}%`);
       conditions.push(`j.experience_level ILIKE $${values.length}`);
     }
 
@@ -486,9 +547,48 @@ export class JobRepository {
       conditions.push(`(j.salary_min <= $${p} OR j.salary_min IS NULL)`);
     }
 
+    if (filters.companyId) {
+      values.push(filters.companyId);
+      conditions.push(`j.company_id = $${values.length}`);
+    }
+
+    // Skills filtering (Relational via job_skills & skills tables)
+    if (filters.skills && filters.skills.length > 0) {
+      const mode = filters.skillMatch === 'all' ? 'ALL' : 'ANY';
+      const skillList = filters.skills.map((s) => s.trim()).filter((s) => s.length > 0);
+
+      if (skillList.length > 0) {
+        if (mode === 'ALL') {
+          // Job must contain ALL specified skills
+          for (const skillName of skillList) {
+            values.push(`%${skillName}%`);
+            const p = values.length;
+            conditions.push(`EXISTS (
+              SELECT 1 FROM job_skills js_sub 
+              JOIN skills s_sub ON js_sub.skill_id = s_sub.id 
+              WHERE js_sub.job_id = j.id AND s_sub.name ILIKE $${p}
+            )`);
+          }
+        } else {
+          // Job can contain ANY specified skill
+          const skillPlaceholders: string[] = [];
+          for (const skillName of skillList) {
+            values.push(`%${skillName}%`);
+            skillPlaceholders.push(`s_sub.name ILIKE $${values.length}`);
+          }
+          conditions.push(`EXISTS (
+            SELECT 1 FROM job_skills js_sub 
+            JOIN skills s_sub ON js_sub.skill_id = s_sub.id 
+            WHERE js_sub.job_id = j.id AND (${skillPlaceholders.join(' OR ')})
+          )`);
+        }
+      }
+    }
+
     return {
       whereClause: conditions.join(' AND '),
       values,
+      rankColumn,
     };
   }
 }

@@ -28,6 +28,7 @@ export interface Job {
   created_at: string;
   updated_at: string;
   company: CompanySummary;
+  skills?: Array<{ id: string; name: string }>;
   isSaved?: boolean;
 }
 
