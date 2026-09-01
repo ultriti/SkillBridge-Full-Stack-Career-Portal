@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { jobService } from '../../services/job.service';
 import { savedJobService } from '../../services/saved-job.service';
 import { useAuth } from '../../context/AuthContext';
-import { Job } from '../../types/job.types';
+import type { Job } from '../../types/job.types';
 import { MapPin, DollarSign, Calendar, Bookmark, ArrowLeft, Building, Clock, Briefcase, Award } from 'lucide-react';
 
 export const JobDetails: React.FC = () => {

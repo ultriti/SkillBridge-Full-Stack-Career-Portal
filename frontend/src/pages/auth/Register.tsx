@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
 import { UserPlus, User, Mail, Lock } from 'lucide-react';
-import { UserRole } from '../../types/job.types';
+import type { UserRole } from '../../types/job.types';
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export const Register: React.FC = () => {
       navigate('/login');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');
-    } finally {
+    } fiud: {
       setLoading(false);
     }
   };

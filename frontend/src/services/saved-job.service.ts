@@ -1,5 +1,5 @@
 import api from './api';
-import { SavedJob, JobPagination } from '../types/job.types';
+import type { SavedJob, JobPagination } from '../types/job.types';
 
 export interface GetSavedJobsResponse {
   savedJobs: SavedJob[];

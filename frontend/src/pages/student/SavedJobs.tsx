@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { savedJobService } from '../../services/saved-job.service';
-import { SavedJob, JobPagination } from '../../types/job.types';
+import type { SavedJob, JobPagination } from '../../types/job.types';
 import { Pagination } from '../../components/Pagination';
 import { Bookmark, MapPin, DollarSign, Trash2, Calendar, ExternalLink } from 'lucide-react';
 

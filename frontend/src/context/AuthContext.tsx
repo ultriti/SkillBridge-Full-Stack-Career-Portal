@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api, { setAccessToken } from '../services/api';
-import { UserUser, UserRole } from '../types/job.types';
+import type { UserUser } from '../types/job.types';
 
 interface AuthContextType {
   user: UserUser | null;
@@ -18,7 +18,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshUser = async () => {
     try {
-      // First try refreshing the access token via HttpOnly cookie
       const refreshRes = await api.post('/auth/refresh');
       if (refreshRes.data.data?.accessToken) {
         setAccessToken(refreshRes.data.data.accessToken);

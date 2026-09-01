@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { jobService } from '../../services/job.service';
-import { UpdateJobRequest, JobType, WorkMode } from '../../types/job.types';
+import type { UpdateJobRequest } from '../../types/job.types';
 import { ArrowLeft, Save, AlertTriangle } from 'lucide-react';
 
 export const EditJob: React.FC = () => {
@@ -118,7 +118,6 @@ export const EditJob: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Job Title */}
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2">Job Title *</label>
               <input
@@ -131,7 +130,6 @@ export const EditJob: React.FC = () => {
               />
             </div>
 
-            {/* Job Description */}
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2">Job Description *</label>
               <textarea
@@ -144,7 +142,6 @@ export const EditJob: React.FC = () => {
               />
             </div>
 
-            {/* Job Type & Work Mode */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2">Job Type *</label>
@@ -177,7 +174,6 @@ export const EditJob: React.FC = () => {
               </div>
             </div>
 
-            {/* Location & Experience */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2">Location</label>
@@ -202,7 +198,6 @@ export const EditJob: React.FC = () => {
               </div>
             </div>
 
-            {/* Salary Range */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2">Minimum Salary ($)</label>
@@ -227,7 +222,6 @@ export const EditJob: React.FC = () => {
               </div>
             </div>
 
-            {/* Application Deadline */}
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2">Application Deadline</label>
               <input
@@ -239,7 +233,6 @@ export const EditJob: React.FC = () => {
               />
             </div>
 
-            {/* Form Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t border-slate-800">
               <button
                 type="submit"

@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { jobService } from '../../services/job.service';
 import { savedJobService } from '../../services/saved-job.service';
 import { useAuth } from '../../context/AuthContext';
-import { Job, JobFilters, JobPagination, JobType, WorkMode } from '../../types/job.types';
+import type { Job, JobFilters, JobPagination, JobType, WorkMode } from '../../types/job.types';
 import { Pagination } from '../../components/Pagination';
 import { Search, MapPin, Briefcase, DollarSign, Calendar, Bookmark, Filter, ArrowUpDown } from 'lucide-react';
 
@@ -21,7 +21,6 @@ export const Jobs: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters state initialized from URL query params
   const [searchInput, setSearchInput] = useState<string>(searchParams.get('search') || '');
   const [selectedJobType, setSelectedJobType] = useState<JobType | ''>(
     (searchParams.get('jobType') as JobType) || ''
@@ -116,7 +115,6 @@ export const Jobs: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
         <div className="mb-8 text-center sm:text-left">
           <h1 className="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">
             Explore <span className="text-indigo-400">Career Opportunities</span>
@@ -126,13 +124,11 @@ export const Jobs: React.FC = () => {
           </p>
         </div>
 
-        {/* Search & Filter Bar */}
         <form
           onSubmit={handleApplyFilters}
           className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 mb-8 shadow-xl"
         >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            {/* Search Input */}
             <div className="relative md:col-span-2">
               <Search className="absolute left-3 top-3.5 h-5 w-5 text-slate-500" />
               <input
@@ -144,7 +140,6 @@ export const Jobs: React.FC = () => {
               />
             </div>
 
-            {/* Location Input */}
             <div className="relative">
               <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-slate-500" />
               <input
@@ -156,7 +151,6 @@ export const Jobs: React.FC = () => {
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition flex items-center justify-center space-x-2 shadow-lg"
@@ -166,9 +160,7 @@ export const Jobs: React.FC = () => {
             </button>
           </div>
 
-          {/* Secondary Filters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-slate-800 text-sm">
-            {/* Job Type Dropdown */}
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                 Job Type
@@ -187,7 +179,6 @@ export const Jobs: React.FC = () => {
               </select>
             </div>
 
-            {/* Work Mode Dropdown */}
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                 Work Mode
@@ -204,7 +195,6 @@ export const Jobs: React.FC = () => {
               </select>
             </div>
 
-            {/* Minimum Salary Input */}
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                 Min Salary ($)
@@ -218,7 +208,6 @@ export const Jobs: React.FC = () => {
               />
             </div>
 
-            {/* Sort Options */}
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                 Sort By
@@ -247,7 +236,6 @@ export const Jobs: React.FC = () => {
           </div>
         </form>
 
-        {/* Content Area */}
         {loading ? (
           <div className="flex justify-center items-center py-16">
             <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
@@ -347,7 +335,6 @@ export const Jobs: React.FC = () => {
               </div>
             ))}
 
-            {/* Pagination Controls */}
             <Pagination pagination={pagination} onPageChange={handlePageChange} />
           </div>
         )}

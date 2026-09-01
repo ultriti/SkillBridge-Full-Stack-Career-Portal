@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { jobService } from '../../services/job.service';
-import { CreateJobRequest, JobType, WorkMode, JobStatus } from '../../types/job.types';
+import type { CreateJobRequest, JobStatus } from '../../types/job.types';
 import { ArrowLeft, Save, Send, AlertTriangle } from 'lucide-react';
 
 export const CreateJob: React.FC = () => {
@@ -98,7 +98,6 @@ export const CreateJob: React.FC = () => {
           )}
 
           <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-            {/* Job Title */}
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2">Job Title *</label>
               <input
@@ -112,7 +111,6 @@ export const CreateJob: React.FC = () => {
               />
             </div>
 
-            {/* Job Description */}
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2">Job Description *</label>
               <textarea
@@ -126,7 +124,6 @@ export const CreateJob: React.FC = () => {
               />
             </div>
 
-            {/* Job Type & Work Mode */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2">Job Type *</label>
@@ -159,7 +156,6 @@ export const CreateJob: React.FC = () => {
               </div>
             </div>
 
-            {/* Location & Experience */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2">Location</label>
@@ -186,7 +182,6 @@ export const CreateJob: React.FC = () => {
               </div>
             </div>
 
-            {/* Salary Range */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-2">Minimum Salary ($)</label>
@@ -213,7 +208,6 @@ export const CreateJob: React.FC = () => {
               </div>
             </div>
 
-            {/* Application Deadline */}
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2">Application Deadline</label>
               <input
@@ -225,7 +219,6 @@ export const CreateJob: React.FC = () => {
               />
             </div>
 
-            {/* Form Action Buttons */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t border-slate-800">
               <button
                 type="button"

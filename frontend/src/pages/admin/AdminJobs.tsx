@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { jobService } from '../../services/job.service';
-import { AdminJobDetails, JobStatus, JobPagination } from '../../types/job.types';
+import type { AdminJobDetails, JobStatus, JobPagination } from '../../types/job.types';
 import { Pagination } from '../../components/Pagination';
 import { ShieldCheck, Search, Building, User, Mail, Calendar } from 'lucide-react';
 

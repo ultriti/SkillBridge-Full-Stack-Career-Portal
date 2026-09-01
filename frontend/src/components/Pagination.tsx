@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { JobPagination } from '../types/job.types';
+import type { JobPagination } from '../types/job.types';
 
 interface PaginationProps {
   pagination: JobPagination;
