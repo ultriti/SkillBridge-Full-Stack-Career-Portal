@@ -41,31 +41,39 @@ export class AuthService {
     refreshToken: string;
     user: AuthUser;
   }> {
-    const user = await userRepository.findByEmail(input.email);
+    try {
+      const user = await userRepository.findByEmail(input.email);
 
-    // Don't reveal whether email exists or password is wrong
-    if (!user || !(await comparePassword(input.password, user.password_hash))) {
-      const error = new Error('Invalid email or password');
-      (error as any).statusCode = 401;
+      // Don't reveal whether email exists or password is wrong
+      if (!user || !(await comparePassword(input.password, user.password_hash))) {
+        const error = new Error('Invalid email or password');
+        (error as any).statusCode = 401;
+        throw error;
+      }
+
+      // Generate tokens
+      const accessToken = generateAccessToken(user.id, user.role);
+      const refreshToken = generateRefreshToken(user.id);
+
+      // Store refresh token (hashed)
+      const expiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+      const expiresAtMs = this.parseExpiresDuration(expiresIn);
+      const expiresAt = new Date(Date.now() + expiresAtMs);
+
+      await refreshTokenRepository.createRefreshToken(user.id, refreshToken, expiresAt);
+
+      return {
+        accessToken,
+        refreshToken,
+        user: this.userToAuthUser(user),
+      };
+    } catch (error: any) {
+      console.error('Login error:', error);
+      if (error.statusCode) {
+        throw error;
+      }
       throw error;
     }
-
-    // Generate tokens
-    const accessToken = generateAccessToken(user.id, user.role);
-    const refreshToken = generateRefreshToken(user.id);
-
-    // Store refresh token (hashed)
-    const expiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
-    const expiresAtMs = this.parseExpiresDuration(expiresIn);
-    const expiresAt = new Date(Date.now() + expiresAtMs);
-
-    await refreshTokenRepository.createRefreshToken(user.id, refreshToken, expiresAt);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: this.userToAuthUser(user),
-    };
   }
 
   /**
