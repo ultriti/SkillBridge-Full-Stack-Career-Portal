@@ -33,6 +33,10 @@ export const Navbar: React.FC = () => {
 
             {user && user.role === 'student' && (
               <>
+                <Link to="/student/dashboard" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
+                  <Briefcase className="w-4 h-4 text-indigo-400" />
+                  <span>Dashboard</span>
+                </Link>
                 <Link to="/student/applications" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
                   <FileText className="w-4 h-4 text-indigo-400" />
                   <span>My Applications</span>
@@ -46,6 +50,10 @@ export const Navbar: React.FC = () => {
 
             {user && user.role === 'recruiter' && (
               <>
+                <Link to="/recruiter/dashboard" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
+                  <Briefcase className="w-4 h-4 text-emerald-400" />
+                  <span>Dashboard</span>
+                </Link>
                 <Link to="/recruiter/jobs" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
                   <Briefcase className="w-4 h-4 text-emerald-400" />
                   <span>My Jobs</span>
@@ -63,6 +71,10 @@ export const Navbar: React.FC = () => {
 
             {user && user.role === 'admin' && (
               <>
+                <Link to="/admin/dashboard" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </Link>
                 <Link to="/admin/jobs" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
                   <ShieldCheck className="w-4 h-4" />
                   <span>Admin Jobs</span>

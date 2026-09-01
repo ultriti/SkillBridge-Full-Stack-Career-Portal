@@ -21,6 +21,9 @@ import { RecruiterApplications } from './pages/recruiter/RecruiterApplications';
 import { RecruiterApplicationDetailsPage } from './pages/recruiter/RecruiterApplicationDetails';
 import { AdminApplications } from './pages/admin/AdminApplications';
 import { AdminApplicationDetailsPage } from './pages/admin/AdminApplicationDetails';
+import { StudentDashboard } from './pages/student/StudentDashboard';
+import { RecruiterDashboard } from './pages/recruiter/RecruiterDashboard';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
 
 export function App() {
   return (
@@ -44,6 +47,32 @@ export function App() {
                   element={
                     <ProtectedRoute>
                       <NotificationsPage />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Dashboard Routes */}
+                <Route
+                  path="/student/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <StudentDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recruiter/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <RecruiterDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
                     </ProtectedRoute>
                   }
                 />

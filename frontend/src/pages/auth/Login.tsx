@@ -23,10 +23,12 @@ export const Login: React.FC = () => {
       const { accessToken, user } = response.data.data;
       login(accessToken, user);
 
-      if (user.role === 'recruiter') {
-        navigate('/recruiter/jobs');
+      if (user.role === 'student') {
+        navigate('/student/dashboard');
+      } else if (user.role === 'recruiter') {
+        navigate('/recruiter/dashboard');
       } else if (user.role === 'admin') {
-        navigate('/admin/jobs');
+        navigate('/admin/dashboard');
       } else {
         navigate('/jobs');
       }
