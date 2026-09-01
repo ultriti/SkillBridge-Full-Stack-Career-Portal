@@ -1,6 +1,9 @@
+import http from 'http';
 import dotenv from 'dotenv';
+import { Server as SocketIOServer } from 'socket.io';
 import app from './app';
 import pool from './config/db';
+import { initNotificationSocket } from './sockets/notification.socket';
 
 dotenv.config();
 
@@ -19,6 +22,19 @@ if (missingEnvVars.length > 0) {
 }
 
 const PORT = process.env.PORT || 5000;
+const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+
+const server = http.createServer(app);
+
+// Initialize Socket.IO with CORS
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: clientUrl,
+    credentials: true,
+  },
+});
+
+initNotificationSocket(io);
 
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
@@ -28,6 +44,6 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 SkillBridge Backend Server listening on http://localhost:${PORT}`);
 });

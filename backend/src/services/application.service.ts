@@ -1,11 +1,11 @@
-import applicationRepository, {
-  StudentApplicationDetails,
-  RecruiterApplicationDetails,
-  AdminApplicationDetails,
-} from '../repositories/application.repository';
+import applicationRepository from '../repositories/application.repository';
 import jobRepository from '../repositories/job.repository';
 import resumeRepository from '../repositories/resume.repository';
+import userRepository from '../repositories/user.repository';
+import notificationService from './notification.service';
+import emailService from './email.service';
 import { ApplicationStatus } from '../types/database';
+import { NotificationType } from '../types/notification.types';
 import { canTransitionApplicationStatus, canStudentWithdraw } from '../utils/application-status';
 
 export interface ApplicationPagination {
@@ -44,7 +44,6 @@ export class ApplicationService {
     if (job.application_deadline) {
       const deadline = new Date(job.application_deadline);
       const today = new Date();
-      // Reset time portion for fair date comparison
       deadline.setHours(23, 59, 59, 999);
       if (today > deadline) {
         const err: any = new Error('Application deadline has passed');
@@ -78,6 +77,36 @@ export class ApplicationService {
         resumeId,
         coverLetter
       );
+
+      // Trigger In-App Notification & Email for Recruiter (Non-blocking)
+      (async () => {
+        try {
+          const studentUser = await userRepository.findById(studentId);
+          const studentName = studentUser ? `${studentUser.first_name} ${studentUser.last_name}` : 'A candidate';
+
+          await notificationService.createNotification(
+            job.recruiter_id,
+            'New Application Received',
+            `${studentName} has applied for your position '${job.title}'.`,
+            'APPLICATION_SUBMITTED',
+            'APPLICATION',
+            application.id
+          );
+
+          const recruiterUser = await userRepository.findById(job.recruiter_id);
+          if (recruiterUser && recruiterUser.email) {
+            await emailService.sendApplicationSubmittedEmail(
+              recruiterUser.email,
+              studentName,
+              job.title,
+              'your company'
+            );
+          }
+        } catch (eventErr) {
+          console.error('Notification / Email trigger failed for application submission:', eventErr);
+        }
+      })();
+
       return application;
     } catch (err: any) {
       if (err.code === '23505') {
@@ -155,6 +184,29 @@ export class ApplicationService {
     }
 
     const updated = await applicationRepository.updateStatus(applicationId, 'WITHDRAWN');
+
+    // Trigger Notification for Recruiter (Non-blocking)
+    (async () => {
+      try {
+        const studentUser = await userRepository.findById(studentId);
+        const studentName = studentUser ? `${studentUser.first_name} ${studentUser.last_name}` : 'A candidate';
+        const job = await jobRepository.findById(application.job_id);
+
+        if (job) {
+          await notificationService.createNotification(
+            job.recruiter_id,
+            'Application Withdrawn',
+            `${studentName} has withdrawn their application for '${job.title}'.`,
+            'APPLICATION_WITHDRAWN',
+            'APPLICATION',
+            applicationId
+          );
+        }
+      } catch (eventErr) {
+        console.error('Notification trigger failed for application withdrawal:', eventErr);
+      }
+    })();
+
     return updated;
   }
 
@@ -230,6 +282,45 @@ export class ApplicationService {
     }
 
     const updated = await applicationRepository.updateStatus(applicationId, nextStatus);
+
+    // Trigger Notification & Email for Student (Non-blocking)
+    (async () => {
+      try {
+        const notifTypeMap: Record<ApplicationStatus, NotificationType> = {
+          APPLIED: 'APPLICATION_SUBMITTED',
+          REVIEWING: 'APPLICATION_REVIEWING',
+          SHORTLISTED: 'APPLICATION_SHORTLISTED',
+          INTERVIEW: 'APPLICATION_INTERVIEW',
+          SELECTED: 'APPLICATION_SELECTED',
+          REJECTED: 'APPLICATION_REJECTED',
+          WITHDRAWN: 'APPLICATION_WITHDRAWN',
+        };
+
+        const notificationType = notifTypeMap[nextStatus] || 'SYSTEM';
+
+        await notificationService.createNotification(
+          application.student_id,
+          `Application Update: ${nextStatus}`,
+          `Your application for '${application.job.title}' has been updated to '${nextStatus}'.`,
+          notificationType,
+          'APPLICATION',
+          applicationId
+        );
+
+        const studentUser = await userRepository.findById(application.student_id);
+        if (studentUser && studentUser.email) {
+          await emailService.sendApplicationStatusEmail(
+            studentUser.email,
+            `${studentUser.first_name} ${studentUser.last_name}`,
+            application.job.title,
+            nextStatus
+          );
+        }
+      } catch (eventErr) {
+        console.error('Notification / Email trigger failed for status update:', eventErr);
+      }
+    })();
+
     return updated;
   }
 

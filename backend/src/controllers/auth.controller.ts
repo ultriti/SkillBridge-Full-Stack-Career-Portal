@@ -11,7 +11,9 @@ export class AuthController {
   async register(req: Request, res: Response): Promise<void> {
     try {
       const validatedData = registerSchema.parse(req.body);
+      console.log('validatedData', validatedData)
       const user = await authService.registerUser(validatedData);
+
 
       res.status(201).json({
         success: true,

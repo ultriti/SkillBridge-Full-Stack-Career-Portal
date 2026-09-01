@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { NotificationBell } from './notifications/NotificationBell';
 import { Briefcase, Bookmark, PlusCircle, ShieldCheck, LogOut, LogIn, UserPlus, FileText, Users } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -74,10 +75,12 @@ export const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* User Profile / Auth Action */}
+          {/* User Profile & Notification Bell / Auth Action */}
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-3">
+                <NotificationBell />
+
                 <div className="text-right hidden sm:block">
                   <div className="text-sm font-semibold text-slate-200">
                     {user.firstName} {user.lastName}
@@ -90,6 +93,7 @@ export const Navbar: React.FC = () => {
                     {user.role}
                   </span>
                 </div>
+
                 <button
                   onClick={handleLogout}
                   className="flex items-center space-x-1 text-slate-400 hover:text-red-400 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition text-sm"

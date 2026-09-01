@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { Navbar } from './components/Navbar';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -12,6 +13,7 @@ import { SavedJobs } from './pages/student/SavedJobs';
 import { AdminJobs } from './pages/admin/AdminJobs';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
+import { NotificationsPage } from './pages/Notifications';
 
 import { StudentApplications } from './pages/student/StudentApplications';
 import { StudentApplicationDetailsPage } from './pages/student/StudentApplicationDetails';
@@ -23,118 +25,130 @@ import { AdminApplicationDetailsPage } from './pages/admin/AdminApplicationDetai
 export function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-slate-950 flex flex-col font-sans">
-          <Navbar />
-          <main className="flex-1">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Navigate to="/jobs" replace />} />
-              <Route path="/jobs" element={<Jobs />} />
-              <Route path="/jobs/:jobId" element={<JobDetails />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+      <NotificationProvider>
+        <Router>
+          <div className="min-h-screen bg-slate-950 flex flex-col font-sans">
+            <Navbar />
+            <main className="flex-1">
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Navigate to="/jobs" replace />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/jobs/:jobId" element={<JobDetails />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-              {/* Student Routes */}
-              <Route
-                path="/student/saved-jobs"
-                element={
-                  <ProtectedRoute allowedRoles={['student']}>
-                    <SavedJobs />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/applications"
-                element={
-                  <ProtectedRoute allowedRoles={['student']}>
-                    <StudentApplications />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/applications/:applicationId"
-                element={
-                  <ProtectedRoute allowedRoles={['student']}>
-                    <StudentApplicationDetailsPage />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Authenticated Notification Center */}
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute>
+                      <NotificationsPage />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Recruiter Routes */}
-              <Route
-                path="/recruiter/jobs"
-                element={
-                  <ProtectedRoute allowedRoles={['recruiter']}>
-                    <RecruiterJobs />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/recruiter/jobs/create"
-                element={
-                  <ProtectedRoute allowedRoles={['recruiter']}>
-                    <CreateJob />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/recruiter/jobs/:jobId/edit"
-                element={
-                  <ProtectedRoute allowedRoles={['recruiter']}>
-                    <EditJob />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/recruiter/applications"
-                element={
-                  <ProtectedRoute allowedRoles={['recruiter']}>
-                    <RecruiterApplications />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/recruiter/applications/:applicationId"
-                element={
-                  <ProtectedRoute allowedRoles={['recruiter']}>
-                    <RecruiterApplicationDetailsPage />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Student Routes */}
+                <Route
+                  path="/student/saved-jobs"
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <SavedJobs />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/student/applications"
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <StudentApplications />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/student/applications/:applicationId"
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <StudentApplicationDetailsPage />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Admin Routes */}
-              <Route
-                path="/admin/jobs"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminJobs />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/applications"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminApplications />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/applications/:applicationId"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminApplicationDetailsPage />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Recruiter Routes */}
+                <Route
+                  path="/recruiter/jobs"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <RecruiterJobs />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recruiter/jobs/create"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <CreateJob />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recruiter/jobs/:jobId/edit"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <EditJob />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recruiter/applications"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <RecruiterApplications />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recruiter/applications/:applicationId"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <RecruiterApplicationDetailsPage />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to="/jobs" replace />} />
-            </Routes>
-          </main>
-        </div>
-      </Router>
+                {/* Admin Routes */}
+                <Route
+                  path="/admin/jobs"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminJobs />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/applications"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminApplications />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/applications/:applicationId"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminApplicationDetailsPage />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/jobs" replace />} />
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

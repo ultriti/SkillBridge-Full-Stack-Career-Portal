@@ -8,6 +8,7 @@ import jobRoutes from './routes/job.routes';
 import recruiterRoutes from './routes/recruiter.routes';
 import studentRoutes from './routes/student.routes';
 import adminRoutes from './routes/admin.routes';
+import notificationRoutes from './routes/notification.routes';
 
 dotenv.config();
 
@@ -36,5 +37,6 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/recruiter', recruiterRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 export default app;
