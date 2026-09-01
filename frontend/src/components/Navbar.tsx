@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { NotificationBell } from './notifications/NotificationBell';
-import { Briefcase, Bookmark, PlusCircle, ShieldCheck, LogOut, LogIn, UserPlus, FileText, Users } from 'lucide-react';
+import { Briefcase, Bookmark, PlusCircle, ShieldCheck, LogOut, LogIn, UserPlus, FileText, Users, LayoutDashboard, Building } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -34,7 +34,7 @@ export const Navbar: React.FC = () => {
             {user && user.role === 'student' && (
               <>
                 <Link to="/student/dashboard" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
-                  <Briefcase className="w-4 h-4 text-indigo-400" />
+                  <LayoutDashboard className="w-4 h-4 text-indigo-400" />
                   <span>Dashboard</span>
                 </Link>
                 <Link to="/student/applications" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
@@ -51,8 +51,12 @@ export const Navbar: React.FC = () => {
             {user && user.role === 'recruiter' && (
               <>
                 <Link to="/recruiter/dashboard" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
-                  <Briefcase className="w-4 h-4 text-emerald-400" />
+                  <LayoutDashboard className="w-4 h-4 text-emerald-400" />
                   <span>Dashboard</span>
+                </Link>
+                <Link to="/recruiter/company" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
+                  <Building className="w-4 h-4 text-emerald-400" />
+                  <span>Company Profile</span>
                 </Link>
                 <Link to="/recruiter/jobs" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
                   <Briefcase className="w-4 h-4 text-emerald-400" />
@@ -72,7 +76,7 @@ export const Navbar: React.FC = () => {
             {user && user.role === 'admin' && (
               <>
                 <Link to="/admin/dashboard" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
-                  <ShieldCheck className="w-4 h-4" />
+                  <LayoutDashboard className="w-4 h-4" />
                   <span>Dashboard</span>
                 </Link>
                 <Link to="/admin/jobs" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">

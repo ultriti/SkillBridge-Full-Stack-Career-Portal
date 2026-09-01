@@ -9,11 +9,16 @@ import { JobDetails } from './pages/public/JobDetails';
 import { RecruiterJobs } from './pages/recruiter/RecruiterJobs';
 import { CreateJob } from './pages/recruiter/CreateJob';
 import { EditJob } from './pages/recruiter/EditJob';
+import { CompanySetup } from './pages/recruiter/CompanySetup';
 import { SavedJobs } from './pages/student/SavedJobs';
 import { AdminJobs } from './pages/admin/AdminJobs';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
 import { NotificationsPage } from './pages/Notifications';
+
+import { StudentDashboard } from './pages/student/StudentDashboard';
+import { RecruiterDashboard } from './pages/recruiter/RecruiterDashboard';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
 
 import { StudentApplications } from './pages/student/StudentApplications';
 import { StudentApplicationDetailsPage } from './pages/student/StudentApplicationDetails';
@@ -21,9 +26,6 @@ import { RecruiterApplications } from './pages/recruiter/RecruiterApplications';
 import { RecruiterApplicationDetailsPage } from './pages/recruiter/RecruiterApplicationDetails';
 import { AdminApplications } from './pages/admin/AdminApplications';
 import { AdminApplicationDetailsPage } from './pages/admin/AdminApplicationDetails';
-import { StudentDashboard } from './pages/student/StudentDashboard';
-import { RecruiterDashboard } from './pages/recruiter/RecruiterDashboard';
-import { AdminDashboard } from './pages/admin/AdminDashboard';
 
 export function App() {
   return (
@@ -40,16 +42,6 @@ export function App() {
                 <Route path="/jobs/:jobId" element={<JobDetails />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-
-                {/* Authenticated Notification Center */}
-                <Route
-                  path="/notifications"
-                  element={
-                    <ProtectedRoute>
-                      <NotificationsPage />
-                    </ProtectedRoute>
-                  }
-                />
 
                 {/* Dashboard Routes */}
                 <Route
@@ -73,6 +65,16 @@ export function App() {
                   element={
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Authenticated Notification Center */}
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute>
+                      <NotificationsPage />
                     </ProtectedRoute>
                   }
                 />
@@ -104,6 +106,22 @@ export function App() {
                 />
 
                 {/* Recruiter Routes */}
+                <Route
+                  path="/recruiter/company"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <CompanySetup />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recruiter/company/setup"
+                  element={
+                    <ProtectedRoute allowedRoles={['recruiter']}>
+                      <CompanySetup />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/recruiter/jobs"
                   element={

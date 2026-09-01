@@ -33,6 +33,7 @@ export class JobService {
    * Create a new job posting for recruiter
    */
   async createJob(recruiterId: string, input: CreateJobInput) {
+    console.log('recruiterId', recruiterId)
     const company = await companyRepository.findByRecruiterId(recruiterId);
     if (!company) {
       const error: any = new Error('Please create your company profile before creating a job.');

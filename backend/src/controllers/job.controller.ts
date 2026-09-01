@@ -20,6 +20,8 @@ export class JobController {
         return;
       }
 
+      console.log('req.body', req.body)
+
       const validatedData = createJobSchema.parse(req.body);
       const job = await jobService.createJob(req.user.id, validatedData);
 

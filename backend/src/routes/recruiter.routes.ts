@@ -1,17 +1,25 @@
 import { Router } from 'express';
 import jobController from '../controllers/job.controller';
 import applicationController from '../controllers/application.controller';
+import companyController from '../controllers/company.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validateBody, validateQuery } from '../middleware/validate.middleware';
 import {
   recruiterApplicationQuerySchema,
   updateApplicationStatusSchema,
 } from '../validators/application.validator';
+import { upsertCompanySchema } from '../validators/company.validator';
 
 const router = Router();
 
 // All recruiter routes require recruiter role
 router.use(authenticate, authorize('recruiter'));
+
+// Company Profile Management
+router.get('/company', (req, res, next) => companyController.getRecruiterCompany(req, res, next));
+router.post('/company', validateBody(upsertCompanySchema), (req, res, next) =>
+  companyController.upsertRecruiterCompany(req, res, next)
+);
 
 // Jobs
 router.post('/jobs', (req, res) => jobController.createJob(req, res));
