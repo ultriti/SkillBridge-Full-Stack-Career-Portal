@@ -13,6 +13,13 @@ import { AdminJobs } from './pages/admin/AdminJobs';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
 
+import { StudentApplications } from './pages/student/StudentApplications';
+import { StudentApplicationDetailsPage } from './pages/student/StudentApplicationDetails';
+import { RecruiterApplications } from './pages/recruiter/RecruiterApplications';
+import { RecruiterApplicationDetailsPage } from './pages/recruiter/RecruiterApplicationDetails';
+import { AdminApplications } from './pages/admin/AdminApplications';
+import { AdminApplicationDetailsPage } from './pages/admin/AdminApplicationDetails';
+
 export function App() {
   return (
     <AuthProvider>
@@ -34,6 +41,22 @@ export function App() {
                 element={
                   <ProtectedRoute allowedRoles={['student']}>
                     <SavedJobs />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/applications"
+                element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <StudentApplications />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/applications/:applicationId"
+                element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <StudentApplicationDetailsPage />
                   </ProtectedRoute>
                 }
               />
@@ -63,6 +86,22 @@ export function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/recruiter/applications"
+                element={
+                  <ProtectedRoute allowedRoles={['recruiter']}>
+                    <RecruiterApplications />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/recruiter/applications/:applicationId"
+                element={
+                  <ProtectedRoute allowedRoles={['recruiter']}>
+                    <RecruiterApplicationDetailsPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Admin Routes */}
               <Route
@@ -70,6 +109,22 @@ export function App() {
                 element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <AdminJobs />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/applications"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminApplications />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/applications/:applicationId"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminApplicationDetailsPage />
                   </ProtectedRoute>
                 }
               />

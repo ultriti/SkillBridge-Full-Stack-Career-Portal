@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { jobService } from '../../services/job.service';
 import { savedJobService } from '../../services/saved-job.service';
+import { applicationService } from '../../services/application.service';
 import { useAuth } from '../../context/AuthContext';
 import type { Job } from '../../types/job.types';
-import { MapPin, DollarSign, Calendar, Bookmark, ArrowLeft, Building, Clock, Briefcase, Award } from 'lucide-react';
+import { ApplyJobModal } from '../../components/applications/ApplyJobModal';
+import { MapPin, DollarSign, Calendar, Bookmark, ArrowLeft, Building, Clock, Briefcase, Award, Send, CheckCircle2, LogIn } from 'lucide-react';
 
 export const JobDetails: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -12,25 +14,40 @@ export const JobDetails: React.FC = () => {
   const navigate = useNavigate();
 
   const [job, setJob] = useState<Job | null>(null);
+  const [existingApplicationId, setExistingApplicationId] = useState<string | null>(null);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!jobId) return;
-    const fetchJob = async () => {
+    const fetchJobData = async () => {
       setLoading(true);
       setError(null);
       try {
         const data = await jobService.getPublicJobById(jobId);
         setJob(data);
+
+        // Check if authenticated student has already applied
+        if (user && user.role === 'student') {
+          try {
+            const studentApps = await applicationService.getStudentApplications(undefined, 1, 50);
+            const found = studentApps.applications.find((app) => app.job_id === jobId);
+            if (found) {
+              setExistingApplicationId(found.id);
+            }
+          } catch (err) {
+            // Non-fatal application lookup check
+          }
+        }
       } catch (err: any) {
         setError(err.response?.data?.message || 'Job posting not found or no longer active');
       } finally {
         setLoading(false);
       }
     };
-    fetchJob();
-  }, [jobId]);
+    fetchJobData();
+  }, [jobId, user]);
 
   const handleToggleSave = async () => {
     if (!job || !user || user.role !== 'student') return;
@@ -46,6 +63,11 @@ export const JobDetails: React.FC = () => {
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to update saved status');
     }
+  };
+
+  const handleApplySuccess = (newApplicationId: string) => {
+    setExistingApplicationId(newApplicationId);
+    setIsApplyModalOpen(false);
   };
 
   const formatSalary = (min?: number | null, max?: number | null) => {
@@ -84,6 +106,8 @@ export const JobDetails: React.FC = () => {
     );
   }
 
+  const isExpired = job.application_deadline && new Date() > new Date(new Date(job.application_deadline).setHours(23,59,59,999));
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
@@ -117,18 +141,57 @@ export const JobDetails: React.FC = () => {
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-3">
-              {user && user.role === 'student' && (
-                <button
-                  onClick={handleToggleSave}
-                  className={`flex items-center space-x-2 px-5 py-2.5 rounded-lg border font-medium transition ${
-                    job.isSaved
-                      ? 'bg-indigo-950 border-indigo-600 text-indigo-400 hover:bg-indigo-900'
-                      : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700'
-                  }`}
+              {/* Unauthenticated User */}
+              {!user && (
+                <Link
+                  to="/login"
+                  className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg transition"
                 >
-                  <Bookmark className={`w-5 h-5 ${job.isSaved ? 'fill-indigo-400' : ''}`} />
-                  <span>{job.isSaved ? 'Saved' : 'Save Job'}</span>
-                </button>
+                  <LogIn className="w-4 h-4" />
+                  <span>Login to Apply</span>
+                </Link>
+              )}
+
+              {/* Student Role Actions */}
+              {user && user.role === 'student' && (
+                <>
+                  <button
+                    onClick={handleToggleSave}
+                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl border font-medium transition ${
+                      job.isSaved
+                        ? 'bg-indigo-950 border-indigo-600 text-indigo-400 hover:bg-indigo-900'
+                        : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700'
+                    }`}
+                  >
+                    <Bookmark className={`w-5 h-5 ${job.isSaved ? 'fill-indigo-400' : ''}`} />
+                    <span>{job.isSaved ? 'Saved' : 'Save'}</span>
+                  </button>
+
+                  {existingApplicationId ? (
+                    <Link
+                      to={`/student/applications/${existingApplicationId}`}
+                      className="flex items-center space-x-2 bg-emerald-950 border border-emerald-600 text-emerald-300 hover:bg-emerald-900 font-semibold px-6 py-2.5 rounded-xl transition"
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                      <span>Applied (View Status)</span>
+                    </Link>
+                  ) : isExpired ? (
+                    <button
+                      disabled
+                      className="bg-slate-800 border border-slate-700 text-slate-500 font-semibold px-6 py-2.5 rounded-xl cursor-not-allowed"
+                    >
+                      Deadline Passed
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setIsApplyModalOpen(true)}
+                      className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg transition"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>Apply Now</span>
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -224,6 +287,17 @@ export const JobDetails: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Apply Modal */}
+      {isApplyModalOpen && job && (
+        <ApplyJobModal
+          jobId={job.id}
+          jobTitle={job.title}
+          companyName={job.company.name}
+          onClose={() => setIsApplyModalOpen(false)}
+          onSuccess={handleApplySuccess}
+        />
+      )}
     </div>
   );
 };

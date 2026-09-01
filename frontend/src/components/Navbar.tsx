@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Briefcase, Bookmark, PlusCircle, ShieldCheck, LogOut, LogIn, UserPlus } from 'lucide-react';
+import { Briefcase, Bookmark, PlusCircle, ShieldCheck, LogOut, LogIn, UserPlus, FileText, Users } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -31,30 +31,46 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {user && user.role === 'student' && (
-              <Link to="/student/saved-jobs" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
-                <Bookmark className="w-4 h-4 text-indigo-400" />
-                <span>Saved Jobs</span>
-              </Link>
+              <>
+                <Link to="/student/applications" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
+                  <FileText className="w-4 h-4 text-indigo-400" />
+                  <span>My Applications</span>
+                </Link>
+                <Link to="/student/saved-jobs" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
+                  <Bookmark className="w-4 h-4 text-indigo-400" />
+                  <span>Saved Jobs</span>
+                </Link>
+              </>
             )}
 
             {user && user.role === 'recruiter' && (
               <>
                 <Link to="/recruiter/jobs" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
                   <Briefcase className="w-4 h-4 text-emerald-400" />
-                  <span>My Job Postings</span>
+                  <span>My Jobs</span>
+                </Link>
+                <Link to="/recruiter/applications" className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition">
+                  <Users className="w-4 h-4 text-emerald-400" />
+                  <span>Applicants</span>
                 </Link>
                 <Link to="/recruiter/jobs/create" className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg transition font-medium">
                   <PlusCircle className="w-4 h-4" />
-                  <span>Post a Job</span>
+                  <span>Post Job</span>
                 </Link>
               </>
             )}
 
             {user && user.role === 'admin' && (
-              <Link to="/admin/jobs" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Admin Jobs</span>
-              </Link>
+              <>
+                <Link to="/admin/jobs" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Admin Jobs</span>
+                </Link>
+                <Link to="/admin/applications" className="flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 transition">
+                  <FileText className="w-4 h-4" />
+                  <span>Admin Applications</span>
+                </Link>
+              </>
             )}
           </div>
 
